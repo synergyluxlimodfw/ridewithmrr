@@ -154,10 +154,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "How does instant pricing work?",
+          "name": "How do I get an exact price?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Use our Price Calculator on the homepage — select your service, pickup area, and trip type to see your exact price immediately. No hidden fees. Prices are confirmed at booking and final payment is processed via Stripe or Zelle."
+            "text": "Send your trip details through the booking form or text Mr. R. You'll get a confirmed flat rate, usually within minutes."
           }
         },
         {
@@ -1634,69 +1634,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
   box-shadow: 0 0 0 3px rgba(184, 149, 106, 0.15);
 }
 
-/* --- Instant Pricing Calculator fields --- */
-#calculator .calc-field input,
-#calculator .calc-field select {
-  background: rgba(235, 232, 224, 0.94);
-  border: 1px solid rgba(184, 149, 106, 0.6);   /* Part A: gold hairline */
-  color: #1a2332;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-#calculator .calc-field input[type="date"] {
-  color-scheme: light;
-}
-#calculator .calc-field input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: none;
-  opacity: 0.45;
-  cursor: pointer;
-}
-#calculator .calc-field input::placeholder {
-  color: rgba(26, 35, 50, 0.35);
-}
-#calculator .calc-field select option {
-  background: #fff;
-  color: #1a2332;
-}
-/* Part B: gold focus state */
-#calculator .calc-field input:focus,
-#calculator .calc-field select:focus {
-  outline: none;
-  border-color: rgba(184, 149, 106, 1.0);
-  background: rgba(235, 232, 224, 1);
-  box-shadow: 0 0 0 3px rgba(184, 149, 106, 0.15);
-}
-/* Toggle wrapper — Part A: gold hairline */
-#calculator .calc-toggle-wrap {
-  background: rgba(235, 232, 224, 0.94);
-  border-color: rgba(184, 149, 106, 0.6);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-#calculator .calc-toggle-wrap:hover {
-  border-color: rgba(184, 149, 106, 0.7);
-}
-/* Part B: focus-within for keyboard nav on toggle */
-#calculator .calc-toggle-wrap:focus-within {
-  outline: none;
-  border-color: rgba(184, 149, 106, 1.0);
-  box-shadow: 0 0 0 3px rgba(184, 149, 106, 0.15);
-}
-/* Toggle label — dark ink */
-#calculator .calc-toggle-label {
-  color: #1a2332;
-}
-/* Track: dark-muted off / gold on */
-#calculator .calc-toggle-track {
-  background: rgba(26, 35, 50, 0.18);
-}
-#calculator .calc-toggle input:checked ~ .calc-toggle-track {
-  background: #B8956A;
-}
-/* Knob: warm cream */
-#calculator .calc-toggle-thumb {
-  background: #FAF7F0;
-}
 </style>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOWMJuY_dQuywNAjny-qNlNL3DqgwrDRc&libraries=places&callback=initQuoteCalc" async defer></script>
 </head>
 <body>
 <div class="scroll-progress" id="scrollProgress"></div>
@@ -1774,10 +1712,10 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
   <!-- Desktop form (hidden on mobile — lives in #hero-booking-band instead) -->
   <form class="combined-booking-form hero-form-desktop" onsubmit="return false;">
     <label>Pickup location
-      <input type="text" id="hPickup" placeholder="Address or airport" autocomplete="off" />
+      <input type="text" id="hPickup" placeholder="Address, airport, or landmark" autocomplete="off" />
     </label>
     <label>Drop-off location
-      <input type="text" id="hDropoff" placeholder="Address or airport" autocomplete="off" />
+      <input type="text" id="hDropoff" placeholder="Address, airport, or landmark" autocomplete="off" />
     </label>
     <label>Date
       <input type="date" id="hDate" />
@@ -1785,7 +1723,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
     <label>Pickup time
       <select id="hTime"><option value="">Time</option></select>
     </label>
-    <button type="submit" id="heroCalcBtn" onclick="heroGetQuote()">Get a Quote</button>
+    <button type="submit" id="heroCalcBtn" onclick="heroToBooking()">Get a Quote</button>
   </form>
 
   <div class="starting-from-strip hero-strip-desktop">
@@ -1802,20 +1740,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
     <span class="sf-item">Hourly <strong>$110/hr</strong></span>
   </div>
 
-  <!-- Hidden service type — auto-detected by inferServiceType() -->
-  <div style="display:none">
-    <select id="hService">
-      <option value="airport_jfk">JFK Airport Transfer</option>
-      <option value="airport_lga">LaGuardia Transfer</option>
-      <option value="airport_ewr">Newark Transfer</option>
-      <option value="airport_hpn">Westchester (HPN) Transfer</option>
-      <option value="hourly">Hourly Charter</option>
-      <option value="wedding">Wedding Package</option>
-      <option value="nightout">Night Out</option>
-      <option value="gameday">Game Day</option>
-      <option value="longdistance">Long Distance</option>
-    </select>
-  </div>
+
 
   <div class="hero-scroll">
     <span>Scroll</span>
@@ -1827,10 +1752,10 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
 <section id="hero-booking-band" class="hero-booking-band">
   <form class="combined-booking-form hero-form-mobile" onsubmit="return false;">
     <label>Pickup location
-      <input type="text" id="hPickupMobile" placeholder="Address or airport" autocomplete="off" />
+      <input type="text" id="hPickupMobile" placeholder="Address, airport, or landmark" autocomplete="off" />
     </label>
     <label>Drop-off location
-      <input type="text" id="hDropoffMobile" placeholder="Address or airport" autocomplete="off" />
+      <input type="text" id="hDropoffMobile" placeholder="Address, airport, or landmark" autocomplete="off" />
     </label>
     <label>Date
       <input type="date" id="hDateMobile" />
@@ -1838,7 +1763,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
     <label>Pickup time
       <select id="hTimeMobile"><option value="">Time</option></select>
     </label>
-    <button type="submit" id="heroCalcBtnMobile" onclick="heroGetQuoteMobile()">Get a Quote</button>
+    <button type="submit" id="heroCalcBtnMobile" onclick="heroToBookingMobile()">Get a Quote</button>
   </form>
 
   <div class="starting-from-strip">
@@ -1887,7 +1812,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
           <p class="svc-rds-desc">JFK, LaGuardia, Newark, and Westchester (HPN). Flight tracking and complimentary wait time included with every airport transfer.</p>
           <div class="svc-rds-meta">
             <span class="svc-rds-price">From $135</span>
-            <a href="#calculator" class="svc-rds-cta">Get a quote →</a>
+            <a href="#booking" class="svc-rds-cta">Get a quote →</a>
           </div>
         </div>
       </article>
@@ -1903,7 +1828,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
           <p class="svc-rds-desc">Reserve a dedicated chauffeur by the hour. Corporate, executive, or personal travel — wherever the day takes you across NYC & Westchester.</p>
           <div class="svc-rds-meta">
             <span class="svc-rds-price">From $110/hr</span>
-            <a href="#calculator" class="svc-rds-cta">Get a quote →</a>
+            <a href="#booking" class="svc-rds-cta">Get a quote →</a>
           </div>
         </div>
       </article>
@@ -1919,7 +1844,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
           <p class="svc-rds-desc">Weddings, proms, anniversaries, Yankees, Mets, Knicks, MSG, and MetLife events. Custom coordination for the days you'll remember.</p>
           <div class="svc-rds-meta">
             <span class="svc-rds-price">From $350</span>
-            <a href="#calculator" class="svc-rds-cta">Inquire →</a>
+            <a href="#booking" class="svc-rds-cta">Inquire →</a>
           </div>
         </div>
       </article>
@@ -2006,40 +1931,6 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
 </section>
 
 
-<!-- Exit-intent modal -->
-<div class="exit-intent-overlay" id="exitIntentOverlay">
-  <div class="exit-intent-card">
-    <div class="exit-intent-eyebrow">Before you go —</div>
-    <h3 class="exit-intent-title">
-      Want us to hold this rate for you?
-    </h3>
-    <p class="exit-intent-sub">
-      We'll text you the details and keep this quote available
-      for your selected time.
-    </p>
-    <input type="tel" id="exitIntentPhone"
-           placeholder="(555) 123-4567"
-           autocomplete="tel" />
-    <button class="exit-intent-submit"
-            id="exitIntentSubmitBtn"
-            onclick="submitExitIntent()">
-      Reserve My Rate
-    </button>
-    <button class="exit-intent-dismiss"
-            onclick="dismissExitIntent()">
-      No thanks
-    </button>
-    <div class="exit-intent-error" id="exitIntentError">
-      Couldn't save — please call
-      <a href="tel:+16468791391" style="color:var(--gold);">
-        (646) 879-1391
-      </a>
-    </div>
-    <div class="exit-intent-success" id="exitIntentSuccess">
-      ✓ You're all set — we've reserved your quote.
-    </div>
-  </div>
-</div>
 
 <!-- ══ ABOUT / FOUNDER (cream editorial) ══ -->
 <section class="about-rds" id="about">
@@ -2073,7 +1964,6 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
       <p class="eyebrow" style="justify-content:center;">Smart Booking</p>
       <h2>Book Your Ride</h2>
       <p>Prefer to fill a form? We'll confirm personally within minutes.</p>
-      <a href="#calculator" class="calc-shortcut">Want exact pricing first? → Calculate your trip</a>
     </div>
     <form class="form-grid reveal d2" id="bookingForm" onsubmit="return handleBooking(event);">
       <div class="fg"><label>Full Name *</label><input type="text" id="f_name" name="Name" placeholder="Your full name" required></div>
@@ -2108,8 +1998,8 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
           <option>Corporate Account — Monthly</option>
         </select>
       </div>
-      <div class="fg"><label>Pickup Location *</label><input type="text" id="f_pickup" name="Pickup_Location" placeholder="Full address or terminal" required></div>
-      <div class="fg"><label>Drop-off Location *</label><input type="text" id="f_dropoff" name="Dropoff_Location" placeholder="Full address or location" required></div>
+      <div class="fg"><label>Pickup Location *</label><input type="text" id="f_pickup" name="Pickup_Location" placeholder="Address, airport, or landmark" required></div>
+      <div class="fg"><label>Drop-off Location *</label><input type="text" id="f_dropoff" name="Dropoff_Location" placeholder="Address, airport, or landmark" required></div>
       <div class="fg"><label>Date *</label><input type="date" id="f_date" name="Date" required></div>
       <div class="fg"><label>Time *</label><input type="time" id="f_time" name="Time" required></div>
       <div class="fg"><label>Passengers</label>
@@ -2420,10 +2310,10 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
     <div class="faq-rds-list">
       <details class="faq-rds-item">
         <summary class="faq-rds-question">
-          <span class="faq-rds-q-text">How does instant pricing work?</span>
+          <span class="faq-rds-q-text">How do I get an exact price?</span>
           <span class="faq-rds-indicator" aria-hidden="true">+</span>
         </summary>
-        <div class="faq-rds-answer">Use our Price Calculator above — select your service, pickup area, and trip type to see your exact price immediately. No waiting, no forms. Then submit your booking request and we confirm within minutes.</div>
+        <div class="faq-rds-answer">Send your trip details through the booking form or text Mr. R at <a href="sms:6468791391" style="color:var(--lux-gold);text-decoration:none;">(646) 879-1391</a>. You'll get a confirmed flat rate, usually within minutes.</div>
       </details>
 
       <details class="faq-rds-item">
@@ -2476,156 +2366,6 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
   </div>
 </section>
 
-<!-- ══ PRICE CALCULATOR ══ -->
-<div class="sec calc-section" id="calculator">
-  <div class="calc-inner">
-    <div class="calc-header reveal">
-      <p class="eyebrow" style="justify-content:center;">Instant Pricing</p>
-      <h2>Get Your Instant Quote</h2>
-      <p>Exact pricing based on your route — no estimates, no surprises.</p>
-    </div>
-
-    <!-- Row 1: Service -->
-    <div class="calc-row calc-row-full reveal d1">
-      <div class="calc-field">
-        <label>Service Type</label>
-        <select id="calcService">
-          <option value="">Select service...</option>
-          <option value="airport_jfk">JFK Airport Transfer</option>
-          <option value="airport_lga">LaGuardia Transfer</option>
-          <option value="airport_ewr">Newark Transfer</option>
-          <option value="airport_hpn">Westchester (HPN) Transfer</option>
-          <option value="hourly">Hourly Charter</option>
-          <option value="wedding">Wedding Package</option>
-          <option value="nightout">Night Out</option>
-          <option value="gameday">Game Day</option>
-          <option value="longdistance">Long Distance</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Row 2: Date + Time -->
-    <div class="calc-row reveal d1">
-      <div class="calc-field">
-        <label>Date</label>
-        <input type="date" id="calcDate" />
-      </div>
-      <div class="calc-field">
-        <label>Pickup Time</label>
-        <select id="calcTime">
-          <option value="">Select time...</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Row 3: Addresses -->
-    <div class="calc-row reveal d2">
-      <div class="calc-field">
-        <label>Pickup Address or Landmark</label>
-        <input type="text" id="calcPickupAddr" placeholder="e.g. JFK Terminal 4, Times Square…" autocomplete="off" />
-      </div>
-      <div class="calc-field">
-        <label>Drop-off Address or Landmark</label>
-        <input type="text" id="calcDropoffAddr" placeholder="e.g. 350 5th Ave, Manhattan…" autocomplete="off" />
-      </div>
-    </div>
-
-    <!-- Row 4: Passengers + Return toggle -->
-    <div class="calc-row reveal d2">
-      <div class="calc-field">
-        <label>Passengers</label>
-        <select id="calcPassengers">
-          <option value="1">1 passenger</option>
-          <option value="2">2 passengers</option>
-          <option value="3">3 passengers</option>
-          <option value="4">4 passengers</option>
-          <option value="5">5 passengers</option>
-          <option value="6">6 passengers</option>
-        </select>
-      </div>
-      <div class="calc-field">
-        <label>Return Trip</label>
-        <div class="calc-toggle-wrap" onclick="document.getElementById('calcReturn').click()">
-          <label class="calc-toggle">
-            <input type="checkbox" id="calcReturn" onclick="event.stopPropagation()" onchange="toggleReturnFields()" />
-            <div class="calc-toggle-track"><div class="calc-toggle-thumb"></div></div>
-          </label>
-          <span class="calc-toggle-label">Include return trip</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Return trip date/time (shown when toggle ON) -->
-    <div class="calc-row reveal d2" id="returnFields" style="display:none;">
-      <div class="calc-field">
-        <label>Return Date</label>
-        <input type="date" id="calcReturnDate" />
-      </div>
-      <div class="calc-field">
-        <label>Return Time</label>
-        <select id="calcReturnTime">
-          <option value="">Select time...</option>
-        </select>
-      </div>
-    </div>
-
-    <button class="calc-btn reveal d3" id="calcBtn" onclick="getQuote()">Get My Exact Quote</button>
-
-    <!-- Results -->
-    <div class="price-result" id="priceResult">
-      <div class="price-main" id="priceMain"></div>
-      <div class="price-label" id="priceLabel"></div>
-      <div class="price-summary" id="priceSummary"></div>
-      <div class="price-breakdown" id="priceBreakdown"></div>
-      <div class="price-btns">
-        <button class="btn-pay-now" id="requestRideBtn" onclick="showRequestForm()">Request This Ride — $<span id="requestPrice">0</span></button>
-        <a class="btn-dep-now" href="tel:+16468791391">Call Mr. R</a>
-        <div class="quote-hold-line">This rate is currently available for your selected time.</div>
-        <button class="btn-text-quote" id="textQuoteBtn" onclick="showTextQuoteForm()">💎 Save My Quote — We'll Hold It For You</button>
-      </div>
-      <div class="calc-note" style="margin-bottom:6px;">Price confirmed at booking · Zelle or card accepted</div>
-      <div class="calc-note">Prefer to talk first? <a href="tel:6468791391" style="color:var(--gold);text-decoration:none;">Call (646) 879-1391</a></div>
-
-      <!-- Inline request form -->
-      <div class="quote-request-form" id="quoteRequestForm">
-        <div class="quote-request-fields">
-          <input type="text" id="reqName"  placeholder="Your name"  autocomplete="given-name" />
-          <input type="tel"  id="reqPhone" placeholder="Your phone" autocomplete="tel" />
-          <input type="email" id="reqEmail" name="email" placeholder="Your email" autocomplete="email" />
-        </div>
-        <div class="sms-consent-block" style="margin-top:14px;">
-          <label class="sms-consent-label" for="quoteSmsConsent">
-            <input type="checkbox" id="quoteSmsConsent" name="sms_consent">
-            <span>I agree to receive booking-related texts.
-              <a href="#" class="sms-consent-toggle" onclick="toggleSmsConsent(event, this)">View full terms</a>
-            </span>
-          </label>
-          <div class="sms-consent-full" style="display:none; font-size:11px; color:rgba(239,239,239,0.45); margin-top:8px; line-height:1.6;">
-            By checking this box and submitting this form, you consent to receive transactional text messages from Ride with Mr. R, including booking confirmations, ride status updates, and reservation reminders. Reply STOP to opt out. Reply HELP for help. Standard message and data rates may apply. Message frequency varies. View our <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms of Service</a>. <strong>(Optional — you can complete your booking without consenting to SMS.)</strong>
-          </div>
-        </div>
-        <button class="quote-confirm-btn" id="confirmBtn" onclick="confirmQuoteRequest()">Confirm My Request</button>
-      </div>
-      <div class="quote-success" id="quoteSuccess"></div>
-
-      <!-- Text-me quote form -->
-      <div class="text-quote-form" id="textQuoteForm">
-        <div class="text-quote-form-label">Reserve this rate — we'll text you a confirmation.</div>
-        <div class="text-quote-fields">
-          <input type="text" id="tqName"  placeholder="Your name"         autocomplete="given-name" />
-          <input type="tel"  id="tqPhone" placeholder="(555) 123-4567"    autocomplete="tel" />
-        </div>
-        <button class="text-quote-submit" id="tqSubmitBtn" onclick="sendTextQuote()">Reserve My Rate</button>
-        <div class="text-quote-error" id="tqError">Couldn't send — please call <a href="tel:+16468791391" style="color:var(--gold);">(646) 879-1391</a></div>
-        <div class="text-quote-ok" id="tqSuccess">
-          <div class="tq-success-title">✓ You're all set — we've reserved your quote.</div>
-          <a class="btn-pay-now tq-book-btn" id="tqBookBtn" href="#booking" target="_blank" rel="noopener">Book This Ride</a>
-          <div class="tq-success-sub">Or we'll text you a confirmation in a moment.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ══ FOOTER ══ -->
 <footer class="footer-rds">
@@ -2657,7 +2397,7 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
           <li><a href="#fleet">The Vehicle</a></li>
           <li><a href="#reviews">Reviews</a></li>
           <li><a href="#faq">FAQ</a></li>
-          <li><a href="#calculator">Price Calculator</a></li>
+          <li><a href="#booking">Price Calculator</a></li>
           <li><a href="affiliates.html">Partner Program</a></li>
         </ul>
       </div>
@@ -2680,536 +2420,54 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
 
 <script>
 
-// ── Quote Calculator ──────────────────────────────────────────
-var _quoteData = {};
+// ── Hero form → Booking form transfer ──────────────────────
+function heroToBooking() {
+  var pickup  = document.getElementById('hPickup').value;
+  var dropoff = document.getElementById('hDropoff').value;
+  var date    = document.getElementById('hDate').value;
+  var time    = document.getElementById('hTime').value;
+  if (pickup)  document.getElementById('f_pickup').value = pickup;
+  if (dropoff) document.getElementById('f_dropoff').value = dropoff;
+  if (date)    document.getElementById('f_date').value = date;
+  if (time)    document.getElementById('f_time').value = time;
+  document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+}
+function heroToBookingMobile() {
+  var pickup  = document.getElementById('hPickupMobile').value;
+  var dropoff = document.getElementById('hDropoffMobile').value;
+  var date    = document.getElementById('hDateMobile').value;
+  var time    = document.getElementById('hTimeMobile').value;
+  if (pickup)  document.getElementById('f_pickup').value = pickup;
+  if (dropoff) document.getElementById('f_dropoff').value = dropoff;
+  if (date)    document.getElementById('f_date').value = date;
+  if (time)    document.getElementById('f_time').value = time;
+  document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+}
 
-function initQuoteCalc() {
-  // Build 15-min time intervals
-  var sel = document.getElementById('calcTime');
-  var selR = document.getElementById('calcReturnTime');
-  for (var h = 0; h < 24; h++) {
-    for (var m = 0; m < 60; m += 15) {
-      var h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-      var ampm = h < 12 ? 'AM' : 'PM';
-      var label = h12 + ':' + (m === 0 ? '00' : m) + ' ' + ampm;
-      var val = (h < 10 ? '0' + h : h) + ':' + (m === 0 ? '00' : m);
-      var opt = document.createElement('option');
-      opt.value = val; opt.textContent = label;
-      sel.appendChild(opt);
-      var optR = document.createElement('option');
-      optR.value = val; optR.textContent = label;
-      selR.appendChild(optR);
-    }
-  }
-  // Block past dates
-  var today = new Date();
-  document.getElementById('calcDate').min = today.toISOString().split('T')[0];
-  // Keep return date min in sync with pickup date
-  document.getElementById('calcDate').addEventListener('change', function() {
-    document.getElementById('calcReturnDate').min = this.value;
-  });
-
-  // Google Places autocomplete — calculator fields
-  var opts = { componentRestrictions: { country: 'us' } };
-  new google.maps.places.Autocomplete(document.getElementById('calcPickupAddr'), opts);
-  new google.maps.places.Autocomplete(document.getElementById('calcDropoffAddr'), opts);
-
-  // Google Places autocomplete — hero booking form fields (desktop + mobile)
-  var hPickupEl  = document.getElementById('hPickup');
-  var hDropoffEl = document.getElementById('hDropoff');
-  if (hPickupEl)  new google.maps.places.Autocomplete(hPickupEl, opts);
-  if (hDropoffEl) new google.maps.places.Autocomplete(hDropoffEl, opts);
-  var hPickupMEl  = document.getElementById('hPickupMobile');
-  var hDropoffMEl = document.getElementById('hDropoffMobile');
-  if (hPickupMEl)  new google.maps.places.Autocomplete(hPickupMEl, opts);
-  if (hDropoffMEl) new google.maps.places.Autocomplete(hDropoffMEl, opts);
-
-  // Populate hero time selectors with same 15-min intervals
-  var todayStr = today.toISOString().split('T')[0];
-  [document.getElementById('hTime'), document.getElementById('hTimeMobile')].forEach(function(hTimeSel) {
-    if (!hTimeSel) return;
+// ── Populate hero time selectors ──────────────────────────
+(function initHeroTimes() {
+  var today = new Date().toISOString().split('T')[0];
+  [document.getElementById('hTime'), document.getElementById('hTimeMobile')].forEach(function(sel) {
+    if (!sel) return;
     for (var hh = 0; hh < 24; hh++) {
       for (var mm = 0; mm < 60; mm += 15) {
-        var hh12 = hh === 0 ? 12 : hh > 12 ? hh - 12 : hh;
-        var ap   = hh < 12 ? 'AM' : 'PM';
-        var lbl  = hh12 + ':' + (mm === 0 ? '00' : mm) + ' ' + ap;
-        var vl   = (hh < 10 ? '0' + hh : hh) + ':' + (mm === 0 ? '00' : mm);
-        var o    = document.createElement('option');
+        var h12 = hh === 0 ? 12 : hh > 12 ? hh - 12 : hh;
+        var ap  = hh < 12 ? 'AM' : 'PM';
+        var lbl = h12 + ':' + (mm === 0 ? '00' : mm) + ' ' + ap;
+        var vl  = (hh < 10 ? '0' + hh : hh) + ':' + (mm === 0 ? '00' : mm);
+        var o   = document.createElement('option');
         o.value = vl; o.textContent = lbl;
-        hTimeSel.appendChild(o);
+        sel.appendChild(o);
       }
     }
   });
-
-  // Block past dates on hero date fields
-  var hDateEl = document.getElementById('hDate');
-  if (hDateEl) hDateEl.min = todayStr;
-  var hDateMEl = document.getElementById('hDateMobile');
-  if (hDateMEl) hDateMEl.min = todayStr;
-}
-
-function calcExactPrice(svc, distMiles, durMins, isReturn) {
-  var base = 0, label = '', note = '';
-  var fixedServices = ['wedding', 'nightout', 'gameday'];
-  var autoLong = durMins > 45 && fixedServices.indexOf(svc) === -1 && svc !== 'airport_jfk' && svc !== 'airport_lga' && svc !== 'airport_ewr' && svc !== 'airport_hpn';
-
-  if (svc === 'longdistance' || autoLong) {
-    var hrs = Math.max(3, Math.ceil(durMins / 60));
-    base = 110 * hrs;
-    label = 'Long Distance — ' + hrs + ' hr';
-    note = '$110/hr &times; ' + hrs + ' hours';
-  } else if (svc === 'airport_jfk') {
-    base = 155;
-    label = 'JFK Airport Transfer';
-    note = '$155 flat rate · ' + Math.round(distMiles) + ' mi';
-  } else if (svc === 'airport_lga') {
-    base = 135;
-    label = 'LaGuardia Airport Transfer';
-    note = '$145 flat rate · ' + Math.round(distMiles) + ' mi';
-  } else if (svc === 'airport_ewr') {
-    base = 185;
-    label = 'Newark Airport Transfer';
-    note = '$185 flat rate · ' + Math.round(distMiles) + ' mi';
-  } else if (svc === 'airport_hpn') {
-    base = 145;
-    label = 'Westchester (HPN) Transfer';
-    note = '$145 flat rate · ' + Math.round(distMiles) + ' mi';
-  } else if (svc === 'hourly') {
-    var hrs2 = Math.max(3, Math.ceil(durMins / 60));
-    base = 110 * hrs2;
-    label = 'Hourly Charter — ' + hrs2 + ' hours';
-    note = '$110/hr &times; ' + hrs2 + ' hours';
-  } else if (svc === 'wedding') {
-    base = 1250; label = 'Wedding Package — Full Day (8 hours)'; note = 'Flat rate';
-  } else if (svc === 'nightout') {
-    base = 360; label = 'Night Out — 3 hours'; note = 'Flat rate';
-  } else if (svc === 'gameday') {
-    base = 350; label = 'Game Day — Roundtrip'; note = 'Roundtrip base rate';
-  }
-
-  if (isReturn && svc !== 'gameday') {
-    base = base * 2;
-    label += ' (roundtrip)';
-  }
-  return { price: base, label: label, note: note };
-}
-
-function toggleReturnFields() {
-  var on = document.getElementById('calcReturn').checked;
-  document.getElementById('returnFields').style.display = on ? '' : 'none';
-  if (!on) {
-    document.getElementById('calcReturnDate').value = '';
-    document.getElementById('calcReturnTime').value = '';
-  }
-}
-
-function getQuote() {
-  var svc     = document.getElementById('calcService').value;
-  var dateVal = document.getElementById('calcDate').value;
-  var timeVal = document.getElementById('calcTime').value;
-  var pickup  = document.getElementById('calcPickupAddr').value.trim();
-  var dropoff = document.getElementById('calcDropoffAddr').value.trim();
-  var pax     = document.getElementById('calcPassengers').value;
-  var ret     = document.getElementById('calcReturn').checked;
-  var retDate = ret ? document.getElementById('calcReturnDate').value : '';
-  var retTime = ret ? document.getElementById('calcReturnTime').value : '';
-
-  if (!svc)     { alert('Please select a service type.'); return; }
-  if (!dateVal) { alert('Please select a date.'); return; }
-  if (!timeVal) { alert('Please select a pickup time.'); return; }
-  if (!pickup)  { alert('Please enter a pickup address.'); return; }
-  if (!dropoff) { alert('Please enter a drop-off address.'); return; }
-  if (ret && !retDate) { alert('Please select a return date.'); return; }
-  if (ret && !retTime) { alert('Please select a return time.'); return; }
-  if (ret && retDate < dateVal) { alert('Return date must be the same day or later than pickup date.'); return; }
-
-  // 2-hour advance booking guard
-  var selDT = new Date(dateVal + 'T' + timeVal + ':00');
-  var minDT = new Date(Date.now() + 2 * 60 * 60 * 1000);
-  if (selDT < minDT) {
-    alert('Please select a time at least 2 hours from now.\nFor urgent bookings call Mr. R at (646) 879-1391.');
-    return;
-  }
-
-  var btn = document.getElementById('calcBtn');
-  btn.textContent = 'Calculating route…'; btn.disabled = true;
-
-  var svc2 = new google.maps.DistanceMatrixService();
-  svc2.getDistanceMatrix({
-    origins: [pickup], destinations: [dropoff],
-    travelMode: google.maps.TravelMode.DRIVING,
-    unitSystem: google.maps.UnitSystem.IMPERIAL,
-  }, function(resp, status) {
-    btn.textContent = 'Get My Exact Quote'; btn.disabled = false;
-    if (status !== 'OK' || !resp.rows[0] || resp.rows[0].elements[0].status !== 'OK') {
-      alert('Could not calculate this route. Please check your addresses and try again.');
-      return;
-    }
-    var el       = resp.rows[0].elements[0];
-    var distMi   = el.distance.value / 1609.34;
-    var durMin   = el.duration.value / 60;
-    var distTxt  = el.distance.text;
-    var durTxt   = el.duration.text;
-    var result   = calcExactPrice(svc, distMi, durMin, ret);
-    var dep      = Math.ceil(result.price * 0.5);
-
-    var timeSel    = document.getElementById('calcTime');
-    var timeTxt    = timeSel.options[timeSel.selectedIndex].text;
-    var dateTxt    = new Date(dateVal + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' });
-    var retTimeSel = document.getElementById('calcReturnTime');
-    var retTimeTxt = ret && retTime ? retTimeSel.options[retTimeSel.selectedIndex].text : '';
-    var retDateTxt = ret && retDate ? new Date(retDate + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' }) : '';
-
-    document.getElementById('priceMain').textContent = '$' + result.price;
-    document.getElementById('requestPrice').textContent = result.price;
-    document.getElementById('quoteRequestForm').classList.remove('show');
-    document.getElementById('quoteSuccess').classList.remove('show');
-    document.getElementById('priceLabel').textContent = result.label;
-
-    var summaryHtml;
-    if (ret) {
-      summaryHtml =
-        '<div class="summary-row" style="color:var(--gold);font-size:11px;letter-spacing:1px;">OUTBOUND</div>' +
-        '<div class="summary-row">' + dateTxt + ' &nbsp;·&nbsp; ' + timeTxt + '</div>' +
-        '<div class="summary-row"><span class="summary-from">✦ ' + pickup + '</span></div>' +
-        '<div class="summary-row"><span class="summary-to">→ ' + dropoff + '</span></div>' +
-        '<div class="summary-row" style="color:rgba(239,239,239,0.4);font-size:11px;margin-bottom:10px;">' + distTxt + ' &nbsp;·&nbsp; ' + durTxt + ' drive</div>' +
-        '<div class="summary-row" style="color:var(--gold);font-size:11px;letter-spacing:1px;">RETURN</div>' +
-        '<div class="summary-row">' + retDateTxt + ' &nbsp;·&nbsp; ' + retTimeTxt + '</div>' +
-        '<div class="summary-row"><span class="summary-from">✦ ' + dropoff + '</span></div>' +
-        '<div class="summary-row"><span class="summary-to">→ ' + pickup + '</span></div>';
-    } else {
-      summaryHtml =
-        '<div class="summary-row">' + dateTxt + ' &nbsp;·&nbsp; ' + timeTxt + ' &nbsp;·&nbsp; ' + pax + ' passenger' + (pax > 1 ? 's' : '') + '</div>' +
-        '<div class="summary-row"><span class="summary-from">✦ ' + pickup + '</span></div>' +
-        '<div class="summary-row"><span class="summary-to">→ ' + dropoff + '</span></div>' +
-        '<div class="summary-row" style="color:rgba(239,239,239,0.4);font-size:11px;">' + distTxt + ' &nbsp;·&nbsp; ' + durTxt + ' drive</div>';
-    }
-    document.getElementById('priceSummary').innerHTML = summaryHtml;
-
-    document.getElementById('priceBreakdown').innerHTML =
-      result.note + ' &nbsp;&nbsp;·&nbsp;&nbsp; <span>50% deposit: $' + dep + '</span>';
-
-    var resultEl = document.getElementById('priceResult');
-    resultEl.classList.add('show');
-    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-    _quoteData = { svc:svc, date:dateVal, time:timeVal, pickup:pickup, dropoff:dropoff, passengers:pax, price:result.price,
-                   returnTrip:ret, retDate:retDate, retTime:retTime, retDateTxt:retDateTxt, retTimeTxt:retTimeTxt };
-  });
-}
-
-function showRequestForm() {
-  var form = document.getElementById('quoteRequestForm');
-  document.getElementById('quoteSuccess').classList.remove('show');
-  form.classList.add('show');
-  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  document.getElementById('reqName').focus();
-}
-
-function confirmQuoteRequest() {
-  var name  = document.getElementById('reqName').value.trim();
-  var phone = document.getElementById('reqPhone').value.trim();
-  var consentEl = document.getElementById('quoteSmsConsent');
-  var consentErrEl = document.getElementById('quoteConsentError');
-  if (!name)  { document.getElementById('reqName').focus();  return; }
-  if (!phone) { document.getElementById('reqPhone').focus(); return; }
-  if (consentErrEl) consentErrEl.classList.remove('show');
-
-  var d = _quoteData;
-  var svcLabels = {
-    airport_jfk:'JFK Airport Transfer', airport_lga:'LaGuardia Transfer',
-    airport_ewr:'Newark Transfer', airport_hpn:'Westchester (HPN) Transfer',
-    hourly:'Hourly Charter', wedding:'Wedding Package',
-    nightout:'Night Out', gameday:'Game Day', longdistance:'Long Distance'
-  };
-  var svcLabel = svcLabels[d.svc] || d.svc || 'Limo Service';
-  var timeSel  = document.getElementById('calcTime');
-  var timeTxt  = timeSel.options[timeSel.selectedIndex] ? timeSel.options[timeSel.selectedIndex].text : (d.time || '');
-  var dateTxt  = d.date
-    ? new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' })
-    : '';
-
-  var btn = document.getElementById('confirmBtn');
-  btn.textContent = 'Sending…'; btn.disabled = true;
-
-  var email = document.getElementById('reqEmail') ? document.getElementById('reqEmail').value.trim() : '';
-  var consentChecked = consentEl.checked;
-  var fd = new FormData();
-  fd.append('_subject', 'Quote Request — ' + svcLabel + ' $' + d.price);
-  fd.append('Name', name);
-  fd.append('Phone', phone);
-  if (email) fd.append('Email', email);
-  fd.append('Service', svcLabel);
-  fd.append('Quoted_Price', '$' + d.price);
-  fd.append('Date', dateTxt);
-  fd.append('Time', timeTxt);
-  fd.append('Pickup', d.pickup || '');
-  fd.append('Dropoff', d.dropoff || '');
-  fd.append('Passengers', d.passengers || '1');
-  fd.append('Return_Trip', d.returnTrip ? 'Yes' : 'No');
-  fd.append('SMS_Consent', consentChecked ? 'Yes' : 'No');
-  fd.append('Submitted_At', new Date().toLocaleString('en-US', {timeZone:'America/New_York'}));
-
-  fetch('https://formspree.io/f/xnpdajjp', {method:'POST', body:fd, headers:{'Accept':'application/json'}})
-  .then(function(r) {
-    btn.textContent = 'Confirm My Request'; btn.disabled = false;
-    document.getElementById('quoteRequestForm').classList.remove('show');
-    var suc = document.getElementById('quoteSuccess');
-    suc.innerHTML =
-      '<div class="quote-success-title">✓ Request received, ' + name + '.</div>' +
-      '<div class="quote-success-body">' +
-        'Mr. Rodriguez will confirm your $' + d.price + ' reservation<br>' +
-        'for ' + dateTxt + ' at ' + timeTxt + ' shortly.<br>' +
-        'We\'ll reach out to ' + phone + '.' +
-      '</div>';
-    suc.classList.add('show');
-  })
-  .catch(function(err) {
-    console.error('Quote submit error:', err);
-    btn.textContent = 'Confirm My Request'; btn.disabled = false;
-    document.getElementById('quoteRequestForm').classList.remove('show');
-    var suc = document.getElementById('quoteSuccess');
-    suc.innerHTML =
-      '<div class="quote-success-title">✓ Request received, ' + name + '.</div>' +
-      '<div class="quote-success-body">' +
-        'Mr. Rodriguez will confirm your $' + d.price + ' reservation<br>' +
-        'for ' + dateTxt + ' at ' + timeTxt + ' shortly.<br>' +
-        'We\'ll reach out to ' + phone + '.' +
-      '</div>';
-    suc.classList.add('show');
-  });
-}
-function showTextQuoteForm() {
-  var form = document.getElementById('textQuoteForm');
-  var isShowing = form.classList.contains('show');
-  // Close the request form if open
-  document.getElementById('quoteRequestForm').classList.remove('show');
-  if (isShowing) {
-    form.classList.remove('show');
-  } else {
-    document.getElementById('tqError').style.display = 'none';
-    document.getElementById('tqSuccess').style.display = 'none';
-    form.classList.add('show');
-    form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    document.getElementById('tqName').focus();
-  }
-}
-
-function sendTextQuote() {
-  var name  = document.getElementById('tqName').value.trim();
-  var phone = document.getElementById('tqPhone').value.trim();
-  if (!name)  { document.getElementById('tqName').focus();  return; }
-  if (!phone) { document.getElementById('tqPhone').focus(); return; }
-
-  var d = _quoteData;
-  var svcLabels = {
-    airport_jfk:'JFK Airport Transfer', airport_lga:'LaGuardia Transfer',
-    airport_ewr:'Newark Transfer', airport_hpn:'Westchester (HPN) Transfer',
-    hourly:'Hourly Charter', wedding:'Wedding Package',
-    nightout:'Night Out', gameday:'Game Day', longdistance:'Long Distance'
-  };
-  var svcLabel = svcLabels[d.svc] || d.svc || 'Limo Service';
-  var timeSel  = document.getElementById('calcTime');
-  var timeTxt  = timeSel && timeSel.options[timeSel.selectedIndex] ? timeSel.options[timeSel.selectedIndex].text : (d.time || '');
-  var dateTxt  = d.date ? new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' }) : '';
-  var dtStr    = dateTxt && timeTxt ? dateTxt + ' at ' + timeTxt : (dateTxt || '');
-
-  var btn = document.getElementById('tqSubmitBtn');
-  btn.textContent = 'Sending…'; btn.disabled = true;
-  document.getElementById('tqError').style.display   = 'none';
-  document.getElementById('tqSuccess').style.display = 'none';
-
-  // Show success and scroll to booking
-  btn.textContent = 'Reserve My Rate'; btn.disabled = false;
-  document.getElementById('textQuoteForm').classList.remove('show');
-  var suc = document.getElementById('tqSuccess');
-  suc.style.display = 'block';
-  suc.scrollIntoView({ behavior:'smooth', block:'nearest' });
-}
-
-(function setupExitIntent() {
-  var armed = false;
-  var lastScrollY = 0;
-  var lastScrollTime = Date.now();
-
-  function checkArm() {
-    if (typeof _quoteData !== 'undefined' && _quoteData && _quoteData.price > 0) {
-      if (!armed) {
-        armed = true;
-        console.log('[ExitIntent] armed = true (quote exists)');
-        startInactivityTimer();
-      }
-    }
-  }
-
-  // ─── Inactivity timer (30-second deliberation trigger) ────────
-
-  var inactivityTimer = null;
-  var INACTIVITY_DELAY = 30000;
-
-  function startInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    if (sessionStorage.getItem('sl_exit_intent_shown')) return;
-    inactivityTimer = setTimeout(function() {
-      if (document.visibilityState !== 'visible') return;
-      console.log('[ExitIntent] inactivity timer fired (30s)');
-      showModal();
-    }, INACTIVITY_DELAY);
-  }
-
-  function resetInactivityTimer() {
-    if (!armed) return;
-    startInactivityTimer();
-  }
-
-  var interactionEvents = ['scroll', 'mousemove', 'click', 'touchstart', 'keydown'];
-  interactionEvents.forEach(function(evt) {
-    document.addEventListener(evt, resetInactivityTimer, { passive: true });
-  });
-
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'hidden') {
-      clearTimeout(inactivityTimer);
-      console.log('[ExitIntent] timer paused (tab hidden)');
-    } else if (armed) {
-      startInactivityTimer();
-      console.log('[ExitIntent] timer resumed (tab visible)');
-    }
-  });
-
-  // ─── End inactivity timer ─────────────────────────────────────
-
-  setInterval(checkArm, 1000);
-
-  function shouldFire() {
-    if (!armed) return false;
-    if (sessionStorage.getItem('sl_exit_intent_shown')) return false;
-    var tqSuccess = document.getElementById('tqSuccess');
-    if (tqSuccess && tqSuccess.style.display === 'block') return false;
-    return true;
-  }
-
-  function showModal() {
-    console.log('[ExitIntent] showModal triggered. armed=', armed, 'shouldFire=', shouldFire());
-    if (!shouldFire()) return;
-    sessionStorage.setItem('sl_exit_intent_shown', '1');
-    var overlay = document.getElementById('exitIntentOverlay');
-    overlay.classList.add('show');
-    setTimeout(function() {
-      var phoneInput = document.getElementById('exitIntentPhone');
-      if (phoneInput) phoneInput.focus();
-    }, 400);
-  }
-
-  // ─── Multi-strategy exit-intent detection ───────────────────
-
-  // Strategy 1: mouseout with null relatedTarget — most reliable
-  // cross-browser pattern. Fires when mouse exits document entirely.
-  document.addEventListener('mouseout', function(e) {
-    if (!e.relatedTarget && !e.toElement) {
-      if (e.clientY <= 10) {
-        console.log('[ExitIntent] mouseout y=' + e.clientY);
-        showModal();
-      }
-    }
-  });
-
-  // Strategy 2: mouseleave on documentElement — Safari-friendly fallback
-  document.documentElement.addEventListener('mouseleave', function(e) {
-    if (e.clientY <= 10) {
-      console.log('[ExitIntent] documentElement.mouseleave y=' + e.clientY);
-      showModal();
-    }
-  });
-
-  // Strategy 3: pointermove velocity — detects fast upward motion
-  // toward URL bar even before mouse exits viewport. Catches Safari
-  // edge cases where mouseleave events don't fire reliably.
-  var lastPointerY = 0;
-  var lastPointerT = Date.now();
-  document.addEventListener('pointermove', function(e) {
-    var now = Date.now();
-    var dt = now - lastPointerT;
-    var dy = e.clientY - lastPointerY;
-    // Fast upward motion (>200px in <150ms) reaching top 60px of viewport
-    if (e.clientY < 60 && dy < -200 && dt < 150 && dt > 0) {
-      console.log('[ExitIntent] fast upward motion y=' + e.clientY);
-      showModal();
-    }
-    lastPointerY = e.clientY;
-    lastPointerT = now;
-  }, { passive: true });
-
-  // ─── End multi-strategy ──────────────────────────────────────
-
-  window.addEventListener('scroll', function() {
-    var now = Date.now();
-    var dy = window.scrollY - lastScrollY;
-    var dt = now - lastScrollTime;
-    if (dy < -300 && dt < 250) showModal();
-    lastScrollY = window.scrollY;
-    lastScrollTime = now;
-  }, { passive: true });
-
-  window.slClearExitIntent = function() {
-    sessionStorage.removeItem('sl_exit_intent_shown');
-    console.log('[ExitIntent] session flag cleared, modal can fire again');
-  };
+  var hDate = document.getElementById('hDate');
+  if (hDate) hDate.min = today;
+  var hDateM = document.getElementById('hDateMobile');
+  if (hDateM) hDateM.min = today;
 })();
 
-function dismissExitIntent() {
-  document.getElementById('exitIntentOverlay').classList.remove('show');
-}
-
-function submitExitIntent() {
-  var phone = document.getElementById('exitIntentPhone').value.trim();
-  if (!phone) {
-    document.getElementById('exitIntentPhone').focus();
-    return;
-  }
-
-  var d = (typeof _quoteData !== 'undefined' && _quoteData) || {};
-  if (!d.price) {
-    document.getElementById('exitIntentError').style.display = 'block';
-    return;
-  }
-
-  var svcLabels = {
-    airport_jfk: 'JFK Airport Transfer',
-    airport_lga: 'LaGuardia Transfer',
-    airport_ewr: 'Newark Transfer',
-    airport_hpn: 'Westchester (HPN) Transfer',
-    hourly: 'Hourly Charter',
-    wedding: 'Wedding Package',
-    nightout: 'Night Out',
-    gameday: 'Game Day',
-    longdistance: 'Long Distance'
-  };
-  var svcLabel = svcLabels[d.svc] || d.svc || 'Limo Service';
-  var timeSel = document.getElementById('calcTime');
-  var timeTxt = timeSel && timeSel.options[timeSel.selectedIndex]
-    ? timeSel.options[timeSel.selectedIndex].text : (d.time || '');
-  var dateTxt = d.date
-    ? new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', {
-        weekday: 'short', month: 'long', day: 'numeric', year: 'numeric'
-      }) : '';
-  var dtStr = dateTxt && timeTxt ? dateTxt + ' at ' + timeTxt : (dateTxt || '');
-
-  var btn = document.getElementById('exitIntentSubmitBtn');
-  btn.textContent = 'Saving…';
-  btn.disabled = true;
-  document.getElementById('exitIntentError').style.display = 'none';
-
-  // Show success and dismiss
-  btn.textContent = 'Reserve My Rate';
-  btn.disabled = false;
-  document.getElementById('exitIntentSuccess').style.display = 'block';
-  setTimeout(function() {
-    document.getElementById('exitIntentOverlay').classList.remove('show');
-  }, 2500);
-}
-
+// ── SMS consent toggle ────────────────────────────────────
 function toggleSmsConsent(e, link) {
   e.preventDefault();
   var full = link.closest('.sms-consent-block').querySelector('.sms-consent-full');
@@ -3218,89 +2476,6 @@ function toggleSmsConsent(e, link) {
 }
 function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
 
-// ── Hero booking form ─────────────────────────────────────────
-function inferServiceType(pickup, dropoff) {
-  var p = (pickup || '').toLowerCase();
-  var d = (dropoff || '').toLowerCase();
-  if (p.includes('jfk') || d.includes('jfk') || p.includes('john f. kennedy') || d.includes('john f. kennedy')) {
-    return 'airport_jfk';
-  }
-  if (p.includes('laguardia') || d.includes('laguardia') || p.includes('lga') || d.includes('lga')) {
-    return 'airport_lga';
-  }
-  if (p.includes('newark') || d.includes('newark') || p.includes('ewr') || d.includes('ewr')) {
-    return 'airport_ewr';
-  }
-  if (p.includes('westchester') || d.includes('westchester') || p.includes('hpn') || d.includes('hpn') || p.includes('white plains') || d.includes('white plains')) {
-    return 'airport_hpn';
-  }
-  return 'longdistance';
-}
-function heroGetQuote() {
-  var hPickup  = document.getElementById('hPickup').value;
-  var hDropoff = document.getElementById('hDropoff').value;
-  var hDate    = document.getElementById('hDate').value;
-  var hTime    = document.getElementById('hTime').value;
-
-  if (!hDate) { alert('Please select a date.'); return; }
-  if (!hTime) { alert('Please select a pickup time.'); return; }
-
-  var hSvc = inferServiceType(hPickup, hDropoff);
-  document.getElementById('hService').value        = hSvc;
-  document.getElementById('calcService').value     = hSvc;
-  document.getElementById('calcPickupAddr').value  = hPickup;
-  document.getElementById('calcDropoffAddr').value = hDropoff;
-  document.getElementById('calcDate').value        = hDate;
-  document.getElementById('calcTime').value        = hTime;
-
-  var heroBtn = document.getElementById('heroCalcBtn');
-  heroBtn.disabled = true;
-  heroBtn.textContent = 'Calculating…';
-
-  var poll = setInterval(function() {
-    var calcBtn = document.getElementById('calcBtn');
-    if (calcBtn && !calcBtn.disabled) {
-      clearInterval(poll);
-      heroBtn.disabled = false;
-      heroBtn.textContent = 'Get a Quote';
-    }
-  }, 200);
-
-  getQuote();
-}
-function heroGetQuoteMobile() {
-  var hPickup  = document.getElementById('hPickupMobile').value;
-  var hDropoff = document.getElementById('hDropoffMobile').value;
-  var hDate    = document.getElementById('hDateMobile').value;
-  var hTime    = document.getElementById('hTimeMobile').value;
-
-  if (!hDate) { alert('Please select a date.'); return; }
-  if (!hTime) { alert('Please select a pickup time.'); return; }
-
-  var hSvc = inferServiceType(hPickup, hDropoff);
-  document.getElementById('hService').value        = hSvc;
-  document.getElementById('calcService').value     = hSvc;
-  document.getElementById('calcPickupAddr').value  = hPickup;
-  document.getElementById('calcDropoffAddr').value = hDropoff;
-  document.getElementById('calcDate').value        = hDate;
-  document.getElementById('calcTime').value        = hTime;
-
-  var mBtn = document.getElementById('heroCalcBtnMobile');
-  mBtn.disabled = true;
-  mBtn.textContent = 'Calculating…';
-
-  var poll = setInterval(function() {
-    var calcBtn = document.getElementById('calcBtn');
-    if (calcBtn && !calcBtn.disabled) {
-      clearInterval(poll);
-      mBtn.disabled = false;
-      mBtn.textContent = 'Get a Quote';
-    }
-  }, 200);
-
-  document.getElementById('calculator').scrollIntoView({ behavior: 'smooth' });
-  getQuote();
-}
 function handleBooking(e){
   if(e){e.preventDefault();e.stopPropagation();}
   var btn=document.getElementById('submitBtn');
