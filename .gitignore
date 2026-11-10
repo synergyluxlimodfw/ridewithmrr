@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / config
+.env
+.env.*
+.vercel
+
+# Dependencies
+node_modules/
+
+# Synergy Lux backend (not part of Ride with Mr. R)
+tablet-system/
+tablet-app-dist/
+assets-tablet/
+
+# Large video files
+*.mov
+*.MOV
+
+# Screenshots and unused images
+Screenshot*
+design-references/
+fifa-hero.mp4
+fifa-poster.jpg
+escalade-hero-ai-source.mp4
+vyzzt.jpg
+wilmer_marketing.jpg
+wilmer_urban.jpg
+wilmer-founder copy.jpg
+wilmer1.jpg
+wilmer2.jpg
+*.backup*

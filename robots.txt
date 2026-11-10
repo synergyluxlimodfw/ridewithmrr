@@ -1,0 +1,10 @@
+# Mr. R Black Car
+# https://www.ridewithmrr.com
+
+User-agent: *
+Allow: /
+
+# Post-conversion pages (not for organic search)
+Disallow: /thank-you.html
+
+Sitemap: https://www.ridewithmrr.com/sitemap.xml
