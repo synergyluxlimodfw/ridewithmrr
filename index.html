@@ -1640,6 +1640,21 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
 .wa-float:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(37,211,102,0.4);}
 .wa-float svg{width:28px;height:28px;fill:#fff;}
 @media(max-width:768px){.wa-float{display:flex;}}
+
+/* ── Hero booking form — price display ── */
+.hero-price-line{margin-top:8px;font-size:13px;color:#C9A84C;font-family:'Inter',sans-serif;font-weight:500;letter-spacing:0.04em;line-height:1.5;min-height:20px;transition:opacity 0.3s;}
+.hero-price-deposit{font-size:11px;color:rgba(201,168,76,0.7);font-weight:400;margin-top:2px;}
+.hero-success{text-align:center;padding:32px 24px;}
+.hero-success-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:#fff;margin-bottom:12px;line-height:1.3;}
+.hero-success-sub{font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:24px;line-height:1.6;}
+.hero-success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.hero-success-btns a{padding:12px 24px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:inline-block;transition:all 0.3s;}
+/* Hero form — name/phone row */
+.hero-contact-row{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:0;}
+.hero-contact-row label{border-top:1px solid rgba(0,0,0,0.08);padding-top:16px;}
+@media(max-width:900px){
+  .hero-contact-row{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -1715,22 +1730,34 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
   <!-- Mobile-only CTA (hidden on desktop) -->
   <a href="#hero-booking-band" class="hero-quote-cta">Get a Quote ↓</a>
 
-  <!-- Desktop form (hidden on mobile — lives in #hero-booking-band instead) -->
-  <form class="combined-booking-form hero-form-desktop" onsubmit="return false;">
-    <label>Pickup location
-      <input type="text" id="hPickup" placeholder="Address, airport, or landmark" autocomplete="off" />
-    </label>
-    <label>Drop-off location
-      <input type="text" id="hDropoff" placeholder="Address, airport, or landmark" autocomplete="off" />
-    </label>
-    <label>Date
-      <input type="date" id="hDate" />
-    </label>
-    <label>Pickup time
-      <select id="hTime"><option value="">Time</option></select>
-    </label>
-    <button type="submit" id="heroCalcBtn" onclick="heroToBooking()">Get a Quote</button>
-  </form>
+  <!-- Desktop hero booking form -->
+  <div id="heroFormWrap" class="hero-form-desktop">
+    <form class="combined-booking-form" id="heroForm" onsubmit="return heroSubmit(event,'desktop');" style="grid-template-columns:1.4fr 1fr 1fr 0.8fr 0.7fr auto;">
+      <label>Service
+        <select id="hService" onchange="heroShowPrice('desktop')"><option value="">Select…</option></select>
+      </label>
+      <label>Pickup
+        <input type="text" id="hPickup" name="Pickup_Location" placeholder="Address, airport, or landmark" autocomplete="off" />
+      </label>
+      <label>Drop-off
+        <input type="text" id="hDropoff" name="Dropoff_Location" placeholder="Address, airport, or landmark" autocomplete="off" />
+      </label>
+      <label>Date
+        <input type="date" id="hDate" name="Date" />
+      </label>
+      <label>Time
+        <select id="hTime" name="Time"><option value="">Time</option></select>
+      </label>
+      <button type="submit" id="heroBtn">Book My Ride</button>
+    </form>
+    <div class="hero-contact-row" style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+      <input type="text" id="hName" placeholder="Your name *" style="background:rgba(235,232,224,0.94);border:none;border-bottom:1px solid rgba(0,0,0,0.2);padding:10px 0;font-size:15px;color:#1a1a1a;font-family:'Inter',sans-serif;border-radius:0;" />
+      <input type="tel" id="hPhone" placeholder="Phone number *" style="background:rgba(235,232,224,0.94);border:none;border-bottom:1px solid rgba(0,0,0,0.2);padding:10px 0;font-size:15px;color:#1a1a1a;font-family:'Inter',sans-serif;border-radius:0;" />
+    </div>
+    <div class="hero-price-line" id="heroPriceDesktop"></div>
+    <div class="hero-price-deposit" id="heroDepositDesktop"></div>
+  </div>
+  <div id="heroSuccessDesktop" class="hero-success" style="display:none;"></div>
 
   <div class="starting-from-strip hero-strip-desktop">
     <span class="sf-label">Starting from</span>
@@ -1754,23 +1781,37 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
   </div>
 </section>
 
-<!-- ══ HERO BOOKING BAND (mobile form + pricing strip) ══ -->
+<!-- ══ HERO BOOKING BAND (mobile) ══ -->
 <section id="hero-booking-band" class="hero-booking-band">
-  <form class="combined-booking-form hero-form-mobile" onsubmit="return false;">
-    <label>Pickup location
-      <input type="text" id="hPickupMobile" placeholder="Address, airport, or landmark" autocomplete="off" />
-    </label>
-    <label>Drop-off location
-      <input type="text" id="hDropoffMobile" placeholder="Address, airport, or landmark" autocomplete="off" />
-    </label>
-    <label>Date
-      <input type="date" id="hDateMobile" />
-    </label>
-    <label>Pickup time
-      <select id="hTimeMobile"><option value="">Time</option></select>
-    </label>
-    <button type="submit" id="heroCalcBtnMobile" onclick="heroToBookingMobile()">Get a Quote</button>
-  </form>
+  <div id="heroFormWrapMobile">
+    <form class="combined-booking-form hero-form-mobile" id="heroFormMobile" onsubmit="return heroSubmit(event,'mobile');">
+      <label>Service
+        <select id="hServiceMobile" onchange="heroShowPrice('mobile')"><option value="">Select…</option></select>
+      </label>
+      <label>Pickup
+        <input type="text" id="hPickupMobile" name="Pickup_Location" placeholder="Address, airport, or landmark" autocomplete="off" />
+      </label>
+      <label>Drop-off
+        <input type="text" id="hDropoffMobile" name="Dropoff_Location" placeholder="Address, airport, or landmark" autocomplete="off" />
+      </label>
+      <label>Date
+        <input type="date" id="hDateMobile" name="Date" />
+      </label>
+      <label>Time
+        <select id="hTimeMobile" name="Time"><option value="">Time</option></select>
+      </label>
+      <label>Your name *
+        <input type="text" id="hNameMobile" placeholder="Full name" />
+      </label>
+      <label>Phone *
+        <input type="tel" id="hPhoneMobile" placeholder="(646) 555-0000" />
+      </label>
+      <button type="submit" id="heroBtnMobile" style="min-height:56px;">Book My Ride</button>
+    </form>
+    <div class="hero-price-line" id="heroPriceMobile" style="text-align:center;margin-top:12px;"></div>
+    <div class="hero-price-deposit" id="heroDepositMobile" style="text-align:center;"></div>
+  </div>
+  <div id="heroSuccessMobile" class="hero-success" style="display:none;"></div>
 
   <div class="starting-from-strip">
     <span class="sf-label">Starting from</span>
@@ -2432,34 +2473,37 @@ footer{background:#0A0A0A;border-top:1px solid var(--border);padding:80px 80px 4
 
 <script>
 
-// ── Hero form → Booking form transfer ──────────────────────
-function heroToBooking() {
-  var pickup  = document.getElementById('hPickup').value;
-  var dropoff = document.getElementById('hDropoff').value;
-  var date    = document.getElementById('hDate').value;
-  var time    = document.getElementById('hTime').value;
-  if (pickup)  document.getElementById('f_pickup').value = pickup;
-  if (dropoff) document.getElementById('f_dropoff').value = dropoff;
-  if (date)    document.getElementById('f_date').value = date;
-  if (time)    document.getElementById('f_time').value = time;
-  document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-}
-function heroToBookingMobile() {
-  var pickup  = document.getElementById('hPickupMobile').value;
-  var dropoff = document.getElementById('hDropoffMobile').value;
-  var date    = document.getElementById('hDateMobile').value;
-  var time    = document.getElementById('hTimeMobile').value;
-  if (pickup)  document.getElementById('f_pickup').value = pickup;
-  if (dropoff) document.getElementById('f_dropoff').value = dropoff;
-  if (date)    document.getElementById('f_date').value = date;
-  if (time)    document.getElementById('f_time').value = time;
-  document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-}
+// ═══ RIDE WITH MR. R — PRICE CONFIG ═══════════════════════
+// Change prices here and they update everywhere on the hero bar.
+var MRR_PRICES = {
+  'JFK Airport ($155)':                { price: 155,  label: '$155 flat rate · tolls included · gratuity not included', deposit: 78 },
+  'LaGuardia Airport ($135)':          { price: 135,  label: '$135 flat rate · tolls included · gratuity not included', deposit: 68 },
+  'Newark Airport ($185)':             { price: 185,  label: '$185 flat rate · tolls included · gratuity not included', deposit: 93 },
+  'Westchester Airport HPN ($145)':    { price: 145,  label: '$145 flat rate · tolls included · gratuity not included', deposit: 73 },
+  'Hourly Chauffeur ($110/hr, 3-hr min = $330)': { price: 330, label: '$110/hr · 3-hour minimum · $330 total', deposit: null },
+  'Wedding Full Day ($1,250)':         { price: 1250, label: '$1,250 · 8-hour full day package', deposit: 625 },
+  'Prom / Event 4 hrs ($595)':        { price: 595,  label: '$595 · 4-hour package', deposit: 298 },
+  'Night Out 3 hrs ($360)':           { price: 360,  label: '$360 · 3-hour package', deposit: 180 },
+  'Game Day Round Trip ($350)':        { price: 350,  label: '$350 round trip', deposit: 175 },
+  'Other / Custom Trip':               { price: null, label: 'Custom quote. Mr. R will text you the exact rate.', deposit: null }
+};
 
-// ── Populate hero time selectors ──────────────────────────
-(function initHeroTimes() {
+// ── Populate hero service dropdowns ──────────────────────
+(function initHeroForms() {
+  var svcKeys = Object.keys(MRR_PRICES);
+  ['hService','hServiceMobile'].forEach(function(id) {
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    svcKeys.forEach(function(k) {
+      var o = document.createElement('option');
+      o.value = k; o.textContent = k;
+      sel.appendChild(o);
+    });
+  });
+  // Time selectors
   var today = new Date().toISOString().split('T')[0];
-  [document.getElementById('hTime'), document.getElementById('hTimeMobile')].forEach(function(sel) {
+  ['hTime','hTimeMobile'].forEach(function(id) {
+    var sel = document.getElementById(id);
     if (!sel) return;
     for (var hh = 0; hh < 24; hh++) {
       for (var mm = 0; mm < 60; mm += 15) {
@@ -2473,11 +2517,83 @@ function heroToBookingMobile() {
       }
     }
   });
-  var hDate = document.getElementById('hDate');
-  if (hDate) hDate.min = today;
-  var hDateM = document.getElementById('hDateMobile');
-  if (hDateM) hDateM.min = today;
+  // Date minimums
+  ['hDate','hDateMobile'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.min = today;
+  });
 })();
+
+// ── Show price when service is selected ──────────────────
+function heroShowPrice(variant) {
+  var selId    = variant === 'mobile' ? 'hServiceMobile' : 'hService';
+  var priceId  = variant === 'mobile' ? 'heroPriceMobile' : 'heroPriceDesktop';
+  var depId    = variant === 'mobile' ? 'heroDepositMobile' : 'heroDepositDesktop';
+  var svc      = document.getElementById(selId).value;
+  var priceEl  = document.getElementById(priceId);
+  var depEl    = document.getElementById(depId);
+  if (!svc || !MRR_PRICES[svc]) { priceEl.textContent = ''; depEl.textContent = ''; return; }
+  var info = MRR_PRICES[svc];
+  priceEl.textContent = info.label;
+  depEl.textContent = info.deposit ? '50% deposit to reserve: $' + info.deposit : '';
+}
+
+// ── Hero form submit to Formspree ────────────────────────
+function heroSubmit(e, variant) {
+  e.preventDefault();
+  var m      = variant === 'mobile';
+  var svc    = document.getElementById(m ? 'hServiceMobile' : 'hService').value;
+  var pickup = document.getElementById(m ? 'hPickupMobile' : 'hPickup').value.trim();
+  var drop   = document.getElementById(m ? 'hDropoffMobile' : 'hDropoff').value.trim();
+  var date   = document.getElementById(m ? 'hDateMobile' : 'hDate').value;
+  var time   = document.getElementById(m ? 'hTimeMobile' : 'hTime').value;
+  var name   = document.getElementById(m ? 'hNameMobile' : 'hName').value.trim();
+  var phone  = document.getElementById(m ? 'hPhoneMobile' : 'hPhone').value.trim();
+  var btn    = document.getElementById(m ? 'heroBtnMobile' : 'heroBtn');
+
+  if (!name)  { alert('Please enter your name.'); document.getElementById(m ? 'hNameMobile' : 'hName').focus(); return false; }
+  if (!phone) { alert('Please enter your phone number.'); document.getElementById(m ? 'hPhoneMobile' : 'hPhone').focus(); return false; }
+
+  btn.disabled = true; btn.textContent = 'Sending…';
+
+  var fd = new FormData();
+  fd.append('Name', name);
+  fd.append('Phone', phone);
+  fd.append('Service', svc || 'Not selected');
+  fd.append('Pickup_Location', pickup);
+  fd.append('Dropoff_Location', drop);
+  fd.append('Date', date);
+  fd.append('Time', time);
+  fd.append('Source', 'Hero quote bar');
+  fd.append('submitted_at', new Date().toLocaleString('en-US', {timeZone:'America/New_York'}));
+
+  fetch('https://formspree.io/f/xnpdajjp', {method:'POST', body:fd, headers:{'Accept':'application/json'}})
+  .then(function(r) {
+    if (!r.ok) throw new Error('Submit error');
+    showHeroSuccess(variant, name, phone);
+  })
+  .catch(function(err) {
+    console.error('Hero form error:', err);
+    btn.disabled = false; btn.textContent = 'Book My Ride';
+    alert('Something went wrong. Please call or text (646) 879-1391.');
+  });
+  return false;
+}
+
+function showHeroSuccess(variant, name, phone) {
+  var m = variant === 'mobile';
+  var formWrap   = document.getElementById(m ? 'heroFormWrapMobile' : 'heroFormWrap');
+  var successEl  = document.getElementById(m ? 'heroSuccessMobile' : 'heroSuccessDesktop');
+  formWrap.style.display = 'none';
+  successEl.style.display = 'block';
+  successEl.innerHTML =
+    '<div class="hero-success-title">Thanks, ' + name + '!</div>' +
+    '<div class="hero-success-sub">Mr. R will text you at ' + phone + ' to confirm your ride within minutes.</div>' +
+    '<div class="hero-success-btns">' +
+      '<a href="sms:6468791391" style="border:1px solid rgba(255,255,255,0.3);color:#fff;">💬 Text Mr. R</a>' +
+      '<a href="https://wa.me/16468791391?text=Hi%20Mr.%20R%2C%20this%20is%20' + encodeURIComponent(name) + '.%20Just%20submitted%20a%20booking%20request." target="_blank" rel="noopener" style="background:#25D366;color:#fff;">WhatsApp</a>' +
+    '</div>';
+}
 
 // ── SMS consent toggle ────────────────────────────────────
 function toggleSmsConsent(e, link) {
